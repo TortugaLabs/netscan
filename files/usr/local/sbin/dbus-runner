@@ -1,0 +1,5 @@
+#!/bin/sh
+mkdir -p /run/dbus
+rm -f /run/dbus/pid /run/dbus/system_bus_socket
+exec dbus-daemon --system --nofork
+

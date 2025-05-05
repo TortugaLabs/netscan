@@ -1,0 +1,33 @@
+#!/bin/sh
+set -euf
+(set -o pipefail 2>/dev/null) && set -o pipefail
+
+if [ $# -eq 0 ] ; then
+  echo "Usage: $0 [opts] passwd-file [pwgen options]"
+  exit 1
+fi
+encrypt=''
+while [ $# -gt 0 ]
+do
+  case "$1" in
+  -crypt|-1|-apr1|-aixmd5|-5|-6) encrypt="$1" ;;
+  *) break;
+  esac
+  shift
+done
+
+pwdfile="$1" ; shift
+(
+  if [ -f "$pwdfile" ] ; then
+    cat "$pwdfile"
+    exit 0
+  fi
+
+  pwgen "$@" | tee "$pwdfile"
+) | (
+  if [ -z "$encrypt" ] ; then
+    exec cat
+    exit 0
+  fi
+  openssl passwd "$encrypt" -stdin
+)

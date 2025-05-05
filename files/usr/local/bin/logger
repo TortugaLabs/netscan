@@ -1,0 +1,21 @@
+#!/bin/sh
+tag="" ; pri="" ; console=/proc/1/fd/1
+while [ $# -gt 0 ]
+do
+  case "$1" in
+    -s) : ;;
+    -t) tag="$2" ; shift ;;
+    -p) pri="$2" ; shift ;;
+    *) break ;;
+  esac
+  shift
+done
+
+if [ $# -eq 0 ] ; then
+  while read l
+  do
+    echo "$(date +%Y-%m-%d.%H:%M:%S) $tag:$pri:$l" > $console
+  done
+else
+  echo "$(date +%Y-%m-%d.%H:%M:%S) $tag:$pri:$*" > $console
+fi

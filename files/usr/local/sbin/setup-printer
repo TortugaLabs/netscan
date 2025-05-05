@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Set-up printer
+#
+dbus-runner &
+dbus_pid=$!
+
+# Run cups
+/usr/sbin/cupsd -l &
+cups_pid=$!
+
+sleep 5 # Let thing settle down first...
+
+if ! lpstat -p ; then
+  echo 'Set-up printer'
+  yes q | hp-setup -i -a -x $PRINTER
+  echo ''
+  echo 'Printer configured!'
+fi
+
+kill $cups_pid $dbus_pid
+
